@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRKR College of Engineering - Attendance Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 0.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navbar .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar .logo-img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .navbar .logo-text {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .welcome-text {
+            text-align: center;
+            margin: 3rem 0;
+            color: #333;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .welcome-text h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+            padding: 1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .card i {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card h3 {
+            color: #1e3c72;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .captcha-container {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .btn {
+            background: #1a237e;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #283593;
+        }
+
+        @media (max-width: 768px) {
+            .navbar .logo-text {
+                font-size: 1.4rem;
+            }
+
+            .navbar .logo-img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .welcome-text h1 {
+                font-size: 2rem;
+            }
+
+            .cards-container {
+                grid-template-columns: 1fr;
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="logo.jpg" alt="SRKR Logo" class="logo-img">
+            <div class="logo-text">SRKR Engineering College</div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="welcome-text">
+            <h1>Digital Attendance Portal</h1>
+        </div>
+
+        <div class="cards-container">
+            <div class="card" onclick="showLoginForm('student')">
+                <i class="fas fa-user-graduate"></i>
+                <h3>Student Portal</h3>
+                <p>Access your attendance records, view academic progress, and track your performance metrics</p>
+            </div>
+
+            <div class="card" onclick="showLoginForm('faculty')">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <h3>Faculty Portal</h3>
+                <p>Manage class attendance, monitor student progress, and generate comprehensive reports</p>
+            </div>
+
+            <div class="card" onclick="showLoginForm('hod')">
+                <i class="fas fa-user-tie"></i>
+                <h3>Administrative Portal</h3>
+                <p>Access department analytics, view institutional reports, and manage academic operations</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-modal" id="loginModal">
+        <div class="login-form">
+            <span class="close-btn" onclick="closeLoginForm()">&times;</span>
+            <h2 id="loginTitle">Login</h2>
+            <form id="loginForm" onsubmit="return handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginId">Login ID</label>
+                    <input type="text" id="loginId" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <div class="captcha-container" id="captchaContainer" style="display: none;">
+                    <p>Please enter the captcha: <span id="captchaText"></span></p>
+                    <input type="text" id="captchaInput" placeholder="Enter captcha">
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentRole = '';
+
+        function showLoginForm(role) {
+            currentRole = role;
+            const modal = document.getElementById('loginModal');
+            const title = document.getElementById('loginTitle');
+            const captchaContainer = document.getElementById('captchaContainer');
+            
+            // Show captcha only for faculty login
+            if (role === 'faculty') {
+                captchaContainer.style.display = 'block';
+                generateCaptcha();
+            } else {
+                captchaContainer.style.display = 'none';
+            }
+
+            title.textContent = `${role.charAt(0).toUpperCase() + role.slice(1)} Login`;
+            modal.style.display = 'flex';
+        }
+
+        function closeLoginForm() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('loginForm').reset();
+        }
+
+        function generateCaptcha() {
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            let captcha = '';
+            for (let i = 0; i < 6; i++) {
+                captcha += chars[Math.floor(Math.random() * chars.length)];
+            }
+            document.getElementById('captchaText').textContent = captcha;
+            return captcha;
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const loginId = document.getElementById('loginId').value;
+            const password = document.getElementById('password').value;
+            
+            if (currentRole === 'faculty') {
+                const captchaInput = document.getElementById('captchaInput').value;
+                const captchaText = document.getElementById('captchaText').textContent;
+                
+                if (loginId === 'teacher' && password === 'teacher' && captchaInput === captchaText) {
+                    window.location.href = 'faculty-dashboard.html';
+                } else {
+                    alert('Invalid credentials or captcha! Please try again.');
+                    generateCaptcha();
+                }
+            } else if (currentRole === 'student') {
+                if (loginId === 'student' && password === 'student') {
+                    window.location.href = 'student-dashboard.html';
+                } else {
+                    alert('Invalid credentials!');
+                }
+            } else if (currentRole === 'hod') {
+                if (loginId === 'admin' && password === 'admin') {
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    alert('Invalid credentials!');
+                }
+            }
+            return false;
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('loginModal');
+            if (event.target === modal) {
+                closeLoginForm();
+            }
+        }
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const captcha = document.getElementById('captcha').value;
+            const captchaText = document.getElementById('captchaText').textContent;
+
+            if (username === 'admin' && password === 'admin') {
+                window.location.href = 'admin-dashboard.html';
+            } else if (username === 'teacher' && password === 'teacher' && captcha === captchaText) {
+                window.location.href = 'faculty-dashboard.html';
+            } else if (username === 'student' && password === 'student') {
+                window.location.href = 'student-dashboard.html';
+            } else {
+                alert('Invalid credentials or captcha!');
+                generateCaptcha();
+            }
+        }
+    </script>
+</body>
+</html> 
+ 
