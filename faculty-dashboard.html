@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard - SRKR Engineering College</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+        }
+
+        .navbar .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar .logo-img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .navbar .logo-text {
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .current-time {
+            font-size: 1.1rem;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #1e3c72;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .subjects-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .subject-card {
+            background: #f5f7fa;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .subject-card h3 {
+            color: #1e3c72;
+            margin-bottom: 0.5rem;
+        }
+
+        .subject-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .periods-section {
+            margin-top: 2rem;
+        }
+
+        .period-card {
+            background: #f5f7fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .period-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .period-title {
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .attendance-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            background: #1e3c72;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #2a5298;
+        }
+
+        .btn.secondary {
+            background: #666;
+        }
+
+        .attendance-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .attendance-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .attendance-table th, .attendance-table td {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .attendance-table th {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .attendance-status {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .status-btn {
+            padding: 0.25rem 0.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .status-btn.present {
+            background: #e3fcef;
+            color: #059669;
+        }
+
+        .status-btn.absent {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .class-section {
+            margin-top: 2rem;
+        }
+
+        .class-card {
+            background: #f5f7fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .class-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .class-title {
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .student-list {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .student-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .student-name {
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .student-details {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .attendance-percentage {
+            font-weight: bold;
+            color: #059669;
+        }
+
+        .attendance-percentage.low {
+            color: #dc2626;
+        }
+
+        .student-details.low-attendance {
+            color: #dc2626;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="logo.jpg" alt="SRKR Logo" class="logo-img">
+            <div class="logo-text">SRKR Engineering College</div>
+        </div>
+        <div class="user-info">
+            <div class="current-time" id="currentTime"></div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="main-content">
+                <h2 class="section-title">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    Welcome, Dr. K Aruna Kumari
+                </h2>
+                <p>Subject Faculty - Department of Computer Science and Engineering</p>
+
+                <div class="subjects-list">
+                    <div class="subject-card" onclick="showTeacherPage('SE101')">
+                        <h3>Software Engineering</h3>
+                        <p>III B.Tech. AIML - 2nd Semester</p>
+                        <p>Class: C-201 | Students: 70</p>
+                    </div>
+                    <div class="subject-card" onclick="showTeacherPage('DO101')">
+                        <h3>DevOps</h3>
+                        <p>III B.Tech. AIML - 2nd Semester</p>
+                        <p>Class: C-201 | Students: 70</p>
+                    </div>
+                    <div class="subject-card" onclick="showTeacherPage('MST101')">
+                        <h3>MST</h3>
+                        <p>III B.Tech. AIML - 2nd Semester</p>
+                        <p>Class: C-201 | Students: 70</p>
+                    </div>
+                    <div class="subject-card" onclick="showTeacherPage('LAB101')">
+                        <h3>Software Engineering Lab</h3>
+                        <p>III B.Tech. AIML - 2nd Semester</p>
+                        <p>Class: C-201 | Students: 70</p>
+                    </div>
+                </div>
+
+                <div class="periods-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-clock"></i>
+                        Today's Schedule
+                    </h3>
+                    <div class="period-card">
+                        <div class="period-header">
+                            <div class="period-title">Software Engineering (9:00-9:45)</div>
+                            <div class="attendance-actions">
+                                <button class="btn" onclick="showAttendanceModal('SE101', 70)">Mark Attendance</button>
+                                <button class="btn secondary" onclick="showClassDetails('SE101')">View Class</button>
+                            </div>
+                        </div>
+                        <p>Class: III B.Tech. AIML - 2nd Semester</p>
+                        <p>Room: C-201</p>
+                    </div>
+                    <div class="period-card">
+                        <div class="period-header">
+                            <div class="period-title">DevOps (9:45-10:30)</div>
+                            <div class="attendance-actions">
+                                <button class="btn" onclick="showAttendanceModal('DO101', 70)">Mark Attendance</button>
+                                <button class="btn secondary" onclick="showClassDetails('DO101')">View Class</button>
+                            </div>
+                        </div>
+                        <p>Class: III B.Tech. AIML - 2nd Semester</p>
+                        <p>Room: C-201</p>
+                    </div>
+                    <div class="period-card">
+                        <div class="period-header">
+                            <div class="period-title">MST (10:30-11:15)</div>
+                            <div class="attendance-actions">
+                                <button class="btn" onclick="showAttendanceModal('MST101', 70)">Mark Attendance</button>
+                                <button class="btn secondary" onclick="showClassDetails('MST101')">View Class</button>
+                            </div>
+                        </div>
+                        <p>Class: III B.Tech. AIML - 2nd Semester</p>
+                        <p>Room: C-201</p>
+                    </div>
+                    <div class="period-card">
+                        <div class="period-header">
+                            <div class="period-title">Software Engineering Lab (11:15-12:00)</div>
+                            <div class="attendance-actions">
+                                <button class="btn" onclick="showAttendanceModal('LAB101', 70)">Mark Attendance</button>
+                                <button class="btn secondary" onclick="showClassDetails('LAB101')">View Class</button>
+                            </div>
+                        </div>
+                        <p>Class: III B.Tech. AIML - 2nd Semester</p>
+                        <p>Room: C-201</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <h3 class="section-title">
+                    <i class="fas fa-info-circle"></i>
+                    Class Overview
+                </h3>
+                <div class="class-section">
+                    <div class="class-card">
+                        <div class="class-header">
+                            <div class="class-title">III B.Tech. AIML</div>
+                            <span class="attendance-percentage">85%</span>
+                        </div>
+                        <div class="student-list">
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <span class="student-name">Xyz Kumar Reddy</span>
+                                    <span class="student-details">Roll: 22B91A0501 | Attendance: 92% | CGPA: 9.2</span>
+                                </div>
+                                <span class="attendance-percentage">92%</span>
+                            </div>
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <span class="student-name">Xyz Raviteja</span>
+                                    <span class="student-details low-attendance">Roll: 22B91A0502 | Attendance: 68% | CGPA: 7.8</span>
+                                </div>
+                                <span class="attendance-percentage low">68%</span>
+                            </div>
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <span class="student-name">Xyz Sravani</span>
+                                    <span class="student-details">Roll: 22B91A0503 | Attendance: 95% | CGPA: 9.5</span>
+                                </div>
+                                <span class="attendance-percentage">95%</span>
+                            </div>
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <span class="student-name">Xyz Venkata Sai</span>
+                                    <span class="student-details low-attendance">Roll: 22B91A0504 | Attendance: 72% | CGPA: 8.2</span>
+                                </div>
+                                <span class="attendance-percentage low">72%</span>
+                            </div>
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <span class="student-name">Xyz Sai Kumar</span>
+                                    <span class="student-details">Roll: 22B91A0505 | Attendance: 87% | CGPA: 8.7</span>
+                                </div>
+                                <span class="attendance-percentage">87%</span>
+                            </div>
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <span class="student-name">Xyz Sri Lakshmi</span>
+                                    <span class="student-details low-attendance">Roll: 22B91A0506 | Attendance: 70% | CGPA: 8.0</span>
+                                </div>
+                                <span class="attendance-percentage low">70%</span>
+                            </div>
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <span class="student-name">Xyz Sai Teja</span>
+                                    <span class="student-details">Roll: 22B91A0507 | Attendance: 89% | CGPA: 8.9</span>
+                                </div>
+                                <span class="attendance-percentage">89%</span>
+                            </div>
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <span class="student-name">Xyz Sravani Reddy</span>
+                                    <span class="student-details low-attendance">Roll: 22B91A0508 | Attendance: 65% | CGPA: 7.5</span>
+                                </div>
+                                <span class="attendance-percentage low">65%</span>
+                            </div>
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <span class="student-name">Xyz Sai Kumar Reddy</span>
+                                    <span class="student-details">Roll: 22B91A0509 | Attendance: 86% | CGPA: 8.6</span>
+                                </div>
+                                <span class="attendance-percentage">86%</span>
+                            </div>
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <span class="student-name">Xyz Venkata Sai Reddy</span>
+                                    <span class="student-details">Roll: 22B91A0510 | Attendance: 94% | CGPA: 9.4</span>
+                                </div>
+                                <span class="attendance-percentage">94%</span>
+                            </div>
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <span class="student-name">Xyz Kumar</span>
+                                    <span class="student-details low-attendance">Roll: 22B91A0511 | Attendance: 71% | CGPA: 8.1</span>
+                                </div>
+                                <span class="attendance-percentage low">71%</span>
+                            </div>
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <span class="student-name">Xyz Raviteja Reddy</span>
+                                    <span class="student-details">Roll: 22B91A0512 | Attendance: 88% | CGPA: 8.8</span>
+                                </div>
+                                <span class="attendance-percentage">88%</span>
+                            </div>
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <span class="student-name">Xyz Sai Kumar Reddy</span>
+                                    <span class="student-details low-attendance">Roll: 22B91A0513 | Attendance: 69% | CGPA: 7.9</span>
+                                </div>
+                                <span class="attendance-percentage low">69%</span>
+                            </div>
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <span class="student-name">Xyz Sravani Kumar</span>
+                                    <span class="student-details">Roll: 22B91A0514 | Attendance: 91% | CGPA: 9.1</span>
+                                </div>
+                                <span class="attendance-percentage">91%</span>
+                            </div>
+                            <div class="student-item">
+                                <div class="student-info">
+                                    <span class="student-name">Xyz Lakshmi Reddy</span>
+                                    <span class="student-details low-attendance">Roll: 22B91A0515 | Attendance: 73% | CGPA: 8.3</span>
+                                </div>
+                                <span class="attendance-percentage low">73%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="attendance-modal" id="attendanceModal">
+        <div class="attendance-form">
+            <h3>Mark Attendance</h3>
+            <table class="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Roll No</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="attendanceTableBody">
+                    <!-- Attendance rows will be dynamically added here -->
+                </tbody>
+            </table>
+            <div style="margin-top: 1rem; text-align: right;">
+                <button class="btn secondary" onclick="closeAttendanceModal()">Cancel</button>
+                <button class="btn" onclick="saveAttendance()">Save Attendance</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString();
+            document.getElementById('currentTime').textContent = `${dateString} ${timeString}`;
+        }
+
+        setInterval(updateCurrentTime, 1000);
+        updateCurrentTime();
+
+        function showAttendanceModal(classId, studentCount) {
+            const modal = document.getElementById('attendanceModal');
+            const tbody = document.getElementById('attendanceTableBody');
+            tbody.innerHTML = '';
+
+            // Generate student rows based on class
+            for (let i = 1; i <= studentCount; i++) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>22B91A${String(i).padStart(3, '0')}</td>
+                    <td>Student ${i}</td>
+                    <td>
+                        <div class="attendance-status">
+                            <button class="status-btn present" onclick="toggleAttendance(this, 'present')">Present</button>
+                            <button class="status-btn absent" onclick="toggleAttendance(this, 'absent')">Absent</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function toggleAttendance(button, status) {
+            const row = button.closest('tr');
+            const statusButtons = row.querySelectorAll('.status-btn');
+            statusButtons.forEach(btn => {
+                btn.style.background = btn === button ? 
+                    (status === 'present' ? '#e3fcef' : '#fee2e2') : 
+                    '#f5f7fa';
+            });
+        }
+
+        function closeAttendanceModal() {
+            document.getElementById('attendanceModal').style.display = 'none';
+        }
+
+        function saveAttendance() {
+            // Here you would typically save the attendance data to your backend
+            alert('Attendance saved successfully!');
+            closeAttendanceModal();
+        }
+
+        function showClassDetails(classId) {
+            // Here you would typically show detailed class information
+            alert(`Showing class details for ${classId}`);
+        }
+
+        function showTeacherPage(teacherId) {
+            // Here you would typically navigate to the teacher's page
+            alert(`Navigating to teacher page for ${teacherId}`);
+        }
+
+        function logout() {
+            window.location.href = '1st.html';
+        }
+    </script>
+</body>
+</html> 

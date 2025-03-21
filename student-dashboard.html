@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - SRKR Engineering College</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 0.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar .logo-img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .navbar .logo-text {
+            color: white;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info .welcome-text {
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .user-info .welcome-text:hover {
+            opacity: 0.8;
+        }
+
+        .user-info .logout-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-info .logout-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .dashboard-card h2 {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dashboard-content {
+            display: none;
+            margin-top: 2rem;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-content.active {
+            display: block;
+        }
+
+        .attendance-percentage {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border-radius: 10px;
+        }
+
+        .timetable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .timetable th, .timetable td {
+            padding: 0.75rem;
+            text-align: center;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        .timetable th {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .timetable td {
+            position: relative;
+        }
+
+        .subject-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .subject-name {
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .teacher-name {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .attendance-details {
+            margin: 2rem 0;
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .attendance-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .attendance-card {
+            background: #f5f7fa;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .attendance-card h4 {
+            color: #1e3c72;
+            margin-bottom: 0.5rem;
+        }
+
+        .attendance-list {
+            margin-top: 2rem;
+        }
+
+        .attendance-date {
+            background: #f5f7fa;
+            padding: 0.5rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .period-status {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin: 0.25rem;
+            font-size: 0.8rem;
+        }
+
+        .present {
+            background: #e3fcef;
+            color: #059669;
+        }
+
+        .absent {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .lab-session {
+            background: #fdf6b2;
+        }
+
+        .teacher-id {
+            color: #2a5298;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: block;
+            margin-top: 0.25rem;
+        }
+
+        .teacher-id:hover {
+            color: #1e3c72;
+        }
+
+        .academic-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .academic-card {
+            background: #f5f7fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+
+        .academic-card h3 {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+        }
+
+        .message-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .message-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .message-form textarea {
+            width: 100%;
+            padding: 0.5rem;
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: #1e3c72;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #2a5298;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .navbar {
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+            }
+        }
+
+        .timetable-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+            background: white;
+            border-radius: 15px;
+            padding: 1rem;
+        }
+
+        .department-header {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #1e3c72;
+        }
+
+        .attendance-history {
+            margin-top: 2rem;
+        }
+
+        .attendance-history table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .attendance-history th, .attendance-history td {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .attendance-history th {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .semester-grades {
+            margin-top: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .semester-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .semester-tab {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: #f5f7fa;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .semester-tab.active {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .semester-content {
+            display: none;
+        }
+
+        .semester-content.active {
+            display: block;
+        }
+
+        .grade-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+
+        .grade-table th, .grade-table td {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .grade-table th {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .semester-summary {
+            background: #f5f7fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+
+        .semester-summary p {
+            margin: 0.5rem 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="logo.jpg" alt="SRKR Logo" class="logo-img">
+            <div class="logo-text">SRKR Engineering College</div>
+        </div>
+        <div class="user-info">
+            <span class="welcome-text" onclick="goToHome()">Welcome, <span id="studentName">Student</span></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-cards">
+            <div class="dashboard-card" onclick="showDashboard('attendance')">
+                <h2><i class="fas fa-calendar-check"></i> Attendance Dashboard</h2>
+                <p>View your attendance records and timetable</p>
+            </div>
+            <div class="dashboard-card" onclick="showDashboard('academic')">
+                <h2><i class="fas fa-graduation-cap"></i> Academic Dashboard</h2>
+                <p>Check your academic performance and remarks</p>
+            </div>
+        </div>
+
+        <div id="attendanceDashboard" class="dashboard-content">
+            <div class="timetable-container">
+                <div class="department-header">
+                    <h3>Department of Computer Science and Engineering</h3>
+                    <p>SRKR Engineering College (A) (Affiliated to JNTU, Kakinada), Bhimavaram-534 204, India</p>
+                    <p>III B.Tech. AIML: 2024-25 2nd Semester (w.e.f. 19-12-2024)</p>
+                    <p>Room: C-201</p>
+                </div>
+                
+                <table class="timetable">
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th>9:00-9:45</th>
+                            <th>9:45-10:30</th>
+                            <th>10:30-11:15</th>
+                            <th>11:15-12:00</th>
+                            <th>1:30-2:15</th>
+                            <th>2:15-3:00</th>
+                            <th>3:00-3:45</th>
+                            <th>3:45-4:30</th>
+                            <th>4:30-5:15</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Mon</td>
+                            <td>
+                                <div class="subject-info">
+                                    <span class="subject-name">CN</span>
+                                    <span class="teacher-name">Smt. K Durga Bhavani</span>
+                                    <span class="teacher-id" onclick="showMessageForm('CN101', 'Smt. K Durga Bhavani')">Message (CN101)</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="subject-info">
+                                    <span class="subject-name">DO</span>
+                                    <span class="teacher-name">Sri. DVSRK Raju</span>
+                                    <span class="teacher-id" onclick="showMessageForm('DO101', 'Sri. DVSRK Raju')">Message (DO101)</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="subject-info">
+                                    <span class="subject-name">SE</span>
+                                    <span class="teacher-name">Dr. K Aruna Kumari</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="subject-info">
+                                    <span class="subject-name">DL</span>
+                                    <span class="teacher-name">Sri. BNV Narasimha Raju</span>
+                                </div>
+                            </td>
+                            <td colspan="2" class="lab-session">
+                                <div class="subject-info">
+                                    <span class="subject-name">DVT LAB</span>
+                                    <span class="teacher-name">Dr. DNS B Kavitha</span>
+                                </div>
+                            </td>
+                            <td colspan="3">-</td>
+                        </tr>
+                        <tr>
+                            <td>Tue</td>
+                            <td>
+                                <div class="subject-info">
+                                    <span class="subject-name">DO</span>
+                                    <span class="teacher-name">Sri. DVSRK Raju</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="subject-info">
+                                    <span class="subject-name">SE</span>
+                                    <span class="teacher-name">Dr. K Aruna Kumari</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="subject-info">
+                                    <span class="subject-name">OE-II</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="subject-info">
+                                    <span class="subject-name">M&H</span>
+                                </div>
+                            </td>
+                            <td colspan="5">Counselling</td>
+                        </tr>
+                        <tr>
+                            <td>Wed</td>
+                            <td>
+                                <div class="subject-info">
+                                    <span class="subject-name">ES(QA)</span>
+                                </div>
+                            </td>
+                            <td colspan="2">
+                                <div class="subject-info">
+                                    <span class="subject-name">DL</span>
+                                    <span class="teacher-name">Sri. BNV Narasimha Raju</span>
+                                </div>
+                            </td>
+                            <td>-</td>
+                            <td colspan="5" class="lab-session">
+                                <div class="subject-info">
+                                    <span class="subject-name">DLT LAB</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Thu</td>
+                            <td>
+                                <div class="subject-info">
+                                    <span class="subject-name">SE</span>
+                                    <span class="teacher-name">Dr. K Aruna Kumari</span>
+                                </div>
+                            </td>
+                            <td colspan="2">
+                                <div class="subject-info">
+                                    <span class="subject-name">DL</span>
+                                    <span class="teacher-name">Sri. BNV Narasimha Raju</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="subject-info">
+                                    <span class="subject-name">OE-II</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="subject-info">
+                                    <span class="subject-name">M&H</span>
+                                </div>
+                            </td>
+                            <td colspan="4">-</td>
+                        </tr>
+                        <tr>
+                            <td>Fri</td>
+                            <td>
+                                <div class="subject-info">
+                                    <span class="subject-name">CN</span>
+                                    <span class="teacher-name">Smt. K Durga Bhavani</span>
+                                </div>
+                            </td>
+                            <td colspan="2">
+                                <div class="subject-info">
+                                    <span class="subject-name">ES(VA)</span>
+                                </div>
+                            </td>
+                            <td>-</td>
+                            <td colspan="4" class="lab-session">
+                                <div class="subject-info">
+                                    <span class="subject-name">MST LAB</span>
+                                </div>
+                            </td>
+                            <td>Sports</td>
+                        </tr>
+                        <tr>
+                            <td>Sat</td>
+                            <td colspan="4" class="lab-session">
+                                <div class="subject-info">
+                                    <span class="subject-name">AEC LAB</span>
+                                </div>
+                            </td>
+                            <td colspan="2">
+                                <div class="subject-info">
+                                    <span class="subject-name">GS</span>
+                                </div>
+                            </td>
+                            <td colspan="3">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 2rem;">
+                    <h4>Course Details:</h4>
+                    <table class="timetable" style="margin-top: 1rem;">
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Credits</th>
+                                <th>Teacher</th>
+                                <th>Lec.</th>
+                                <th>Tut.</th>
+                                <th>Lab</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CN - Computer Networks</td>
+                                <td>3</td>
+                                <td>Smt. K Durga Bhavani</td>
+                                <td>3</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td><button class="btn" onclick="showMessageForm('CN101', 'Smt. K Durga Bhavani')">Message</button></td>
+                            </tr>
+                            <tr>
+                                <td>DL - Deep Learning</td>
+                                <td>3</td>
+                                <td>Sri. BNV Narasimha Raju</td>
+                                <td>3</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td><button class="btn" onclick="showMessageForm('DL101', 'Sri. BNV Narasimha Raju')">Message</button></td>
+                            </tr>
+                            <tr>
+                                <td>SE - Software Engineering</td>
+                                <td>3</td>
+                                <td>Dr. K Aruna Kumari</td>
+                                <td>3</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td><button class="btn" onclick="showMessageForm('SE101', 'Dr. K Aruna Kumari')">Message</button></td>
+                            </tr>
+                            <tr>
+                                <td>DO - DevOps</td>
+                                <td>3</td>
+                                <td>Sri. DVSRK Raju</td>
+                                <td>3</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td><button class="btn" onclick="showMessageForm('DO101', 'Sri. DVSRK Raju')">Message</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="attendanceDetails" style="display: none;">
+                <div class="attendance-percentage" id="attendancePercentage">
+                    85%
+                </div>
+
+                <div class="attendance-details">
+                    <h3>Attendance Summary</h3>
+                    <div class="attendance-summary">
+                        <div class="attendance-card">
+                            <h4>Total Classes</h4>
+                            <p>120</p>
+                        </div>
+                        <div class="attendance-card">
+                            <h4>Classes Attended</h4>
+                            <p>102</p>
+                        </div>
+                        <div class="attendance-card">
+                            <h4>Classes Missed</h4>
+                            <p>18</p>
+                        </div>
+                    </div>
+
+                    <div class="attendance-history">
+                        <h3>Last 10 Days Attendance</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>9:00-9:45</th>
+                                    <th>9:45-10:30</th>
+                                    <th>10:30-11:15</th>
+                                    <th>11:15-12:00</th>
+                                    <th>1:30-3:00</th>
+                                    <th>3:00-4:30</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>21-03-2024</td>
+                                    <td class="present">CN</td>
+                                    <td class="present">DO</td>
+                                    <td class="absent">SE</td>
+                                    <td class="present">DL</td>
+                                    <td class="present">DVT LAB</td>
+                                    <td>-</td>
+                                </tr>
+                                <tr>
+                                    <td>20-03-2024</td>
+                                    <td class="present">ES(QA)</td>
+                                    <td class="present">DL</td>
+                                    <td class="present">DL</td>
+                                    <td class="absent">M&H</td>
+                                    <td colspan="2" class="present">DLT LAB</td>
+                                </tr>
+                                <!-- Add more rows for other days -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="academicDashboard" class="dashboard-content">
+            <div class="academic-info">
+                <div class="academic-card">
+                    <h3>Overall CGPA</h3>
+                    <p>8.75</p>
+                </div>
+                <div class="academic-card">
+                    <h3>Current SGPA</h3>
+                    <p>9.0</p>
+                </div>
+                <div class="academic-card">
+                    <h3>Backlogs</h3>
+                    <p>None</p>
+                </div>
+                <div class="academic-card">
+                    <h3>Teacher Remarks</h3>
+                    <p>Excellent performance in all subjects. Keep up the good work!</p>
+                </div>
+            </div>
+
+            <div class="semester-grades">
+                <h3>Semester-wise Performance</h3>
+                <div class="semester-tabs">
+                    <button class="semester-tab active" onclick="showSemester('sem1')">Semester 1</button>
+                    <button class="semester-tab" onclick="showSemester('sem2')">Semester 2</button>
+                    <button class="semester-tab" onclick="showSemester('sem3')">Semester 3</button>
+                    <button class="semester-tab" onclick="showSemester('sem4')">Semester 4</button>
+                </div>
+
+                <div id="sem1" class="semester-content active">
+                    <table class="grade-table">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Credits</th>
+                                <th>Grade</th>
+                                <th>Grade Points</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Engineering Mathematics</td>
+                                <td>4</td>
+                                <td>A+</td>
+                                <td>10</td>
+                                <td>Pass</td>
+                            </tr>
+                            <tr>
+                                <td>Engineering Physics</td>
+                                <td>3</td>
+                                <td>A</td>
+                                <td>9</td>
+                                <td>Pass</td>
+                            </tr>
+                            <tr>
+                                <td>Basic Electrical</td>
+                                <td>3</td>
+                                <td>A+</td>
+                                <td>10</td>
+                                <td>Pass</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="semester-summary">
+                        <p>SGPA: 9.67</p>
+                        <p>Total Credits: 10</p>
+                        <p>Status: Pass</p>
+                    </div>
+                </div>
+
+                <div id="sem2" class="semester-content">
+                    <table class="grade-table">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Credits</th>
+                                <th>Grade</th>
+                                <th>Grade Points</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Data Structures</td>
+                                <td>4</td>
+                                <td>A+</td>
+                                <td>10</td>
+                                <td>Pass</td>
+                            </tr>
+                            <tr>
+                                <td>Object Oriented Programming</td>
+                                <td>3</td>
+                                <td>A</td>
+                                <td>9</td>
+                                <td>Pass</td>
+                            </tr>
+                            <tr>
+                                <td>Digital Logic Design</td>
+                                <td>3</td>
+                                <td>A+</td>
+                                <td>10</td>
+                                <td>Pass</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="semester-summary">
+                        <p>SGPA: 9.67</p>
+                        <p>Total Credits: 10</p>
+                        <p>Status: Pass</p>
+                    </div>
+                </div>
+
+                <div id="sem3" class="semester-content">
+                    <table class="grade-table">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Credits</th>
+                                <th>Grade</th>
+                                <th>Grade Points</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Computer Networks</td>
+                                <td>3</td>
+                                <td>A+</td>
+                                <td>10</td>
+                                <td>Pass</td>
+                            </tr>
+                            <tr>
+                                <td>Deep Learning</td>
+                                <td>3</td>
+                                <td>A</td>
+                                <td>9</td>
+                                <td>Pass</td>
+                            </tr>
+                            <tr>
+                                <td>Software Engineering</td>
+                                <td>3</td>
+                                <td>A+</td>
+                                <td>10</td>
+                                <td>Pass</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="semester-summary">
+                        <p>SGPA: 9.67</p>
+                        <p>Total Credits: 9</p>
+                        <p>Status: Pass</p>
+                    </div>
+                </div>
+
+                <div id="sem4" class="semester-content">
+                    <table class="grade-table">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Credits</th>
+                                <th>Grade</th>
+                                <th>Grade Points</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>DevOps</td>
+                                <td>3</td>
+                                <td>A+</td>
+                                <td>10</td>
+                                <td>Pass</td>
+                            </tr>
+                            <tr>
+                                <td>Machine Learning</td>
+                                <td>3</td>
+                                <td>A</td>
+                                <td>9</td>
+                                <td>Pass</td>
+                            </tr>
+                            <tr>
+                                <td>Cloud Computing</td>
+                                <td>3</td>
+                                <td>A+</td>
+                                <td>10</td>
+                                <td>Pass</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="semester-summary">
+                        <p>SGPA: 9.67</p>
+                        <p>Total Credits: 9</p>
+                        <p>Status: Pass</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="message-modal" id="messageModal">
+        <div class="message-form">
+            <h3>Send Message to Teacher</h3>
+            <textarea placeholder="Type your message here..."></textarea>
+            <button class="btn" onclick="sendMessage()">Send Message</button>
+            <button class="btn" onclick="closeMessageForm()" style="background: #666;">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        function showDashboard(type) {
+            document.getElementById('attendanceDashboard').classList.remove('active');
+            document.getElementById('academicDashboard').classList.remove('active');
+            document.getElementById(type + 'Dashboard').classList.add('active');
+            
+            // Show/hide attendance details based on dashboard type
+            if (type === 'attendance') {
+                document.getElementById('attendanceDetails').style.display = 'block';
+            } else {
+                document.getElementById('attendanceDetails').style.display = 'none';
+            }
+        }
+
+        function showSemester(semId) {
+            // Hide all semester contents
+            document.querySelectorAll('.semester-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.semester-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected semester content
+            document.getElementById(semId).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        function updateAttendanceColor() {
+            const percentage = document.getElementById('attendancePercentage');
+            const value = parseFloat(percentage.textContent);
+            percentage.style.background = value >= 75 ? '#e3fcef' : '#fee2e2';
+            percentage.style.color = value >= 75 ? '#059669' : '#dc2626';
+        }
+
+        function showMessageForm(teacherId) {
+            const modal = document.getElementById('messageModal');
+            modal.style.display = 'flex';
+            // Store teacher ID for sending message
+            modal.dataset.teacherId = teacherId;
+        }
+
+        function closeMessageForm() {
+            document.getElementById('messageModal').style.display = 'none';
+        }
+
+        function sendMessage() {
+            const modal = document.getElementById('messageModal');
+            const teacherId = modal.dataset.teacherId;
+            const message = modal.querySelector('textarea').value;
+            
+            // Here you would typically send the message to your backend
+            alert(`Message sent to teacher ${teacherId}: ${message}`);
+            
+            closeMessageForm();
+        }
+
+        function logout() {
+            window.location.href = '1st.html';
+        }
+
+        function goToHome() {
+            window.location.href = '1st.html';
+        }
+
+        // Initialize
+        updateAttendanceColor();
+        showDashboard('attendance');
+    </script>
+</body>
+</html> 
